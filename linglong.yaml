@@ -1,0 +1,44 @@
+version: "1"
+
+package:
+  id: io.github.treesheets
+  name: treesheets
+  version: 10.28.87.59187
+  kind: app
+  description: |
+    TreeSheets : Free Form Data Organizer (see strlen.com/treesheets)
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+command:
+  - /opt/apps/io.github.treesheets/files/bin/treesheets
+
+sources:
+  - kind: git
+    url: https://github.com/aardappel/treesheets.git
+    version: master
+    commit: eb91b645265572f3e3f2580f4b84c84a94838232
+
+  - kind: git
+    url: https://github.com/wxWidgets/wxWidgets.git
+    version: master
+    commit: ed13a6d873207f52c8447e960536698d9114111d
+
+
+build: |
+  cd /project/linglong/sources/wxWidgets.git/
+  cmake -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} 
+    
+  cmake --build build -j$(nproc --all)
+  cmake --build build --target install
+
+
+  cd /project/linglong/sources/treesheets.git/
+  git apply /project/patches/0001-delete-roles.patch
+  cmake -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} 
+    
+  cmake --build build -j$(nproc --all)
+  cmake --build build --target install
